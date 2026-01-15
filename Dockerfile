@@ -1,5 +1,5 @@
 # Lightweight Node.js image
-FROM node:18-alpine
+FROM public.ecr.aws/docker/library/node:18-alpine
 
 # Create app directory
 WORKDIR /app
