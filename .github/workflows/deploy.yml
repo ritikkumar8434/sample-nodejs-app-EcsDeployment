@@ -44,7 +44,7 @@ jobs:
       - name: Download ECS task definition
         run: |
           aws ecs describe-task-definition \
-            --task-definition ${{ env.ECS_SERVICE }} \
+            --task-definition ecs-nodejs-TD \
             --query taskDefinition > task-definition.json
 
       - name: Update task definition with new image
