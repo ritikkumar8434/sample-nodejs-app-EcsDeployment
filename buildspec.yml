@@ -2,29 +2,29 @@ version: 0.2
 
 env:
   variables:
-    ECR_REPO_NAME: sample-node
+    ECR_REPO_NAME: node-app
     AWS_REGION: us-east-1
 
 phases:
   pre_build:
     commands:
       - echo Logging in to Amazon ECR...
-      - aws ecr get-login-password --region $AWS_REGION |
-        docker login --username AWS --password-stdin 444847049446.dkr.ecr.us-east-1.amazonaws.com
+      - aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 288839812643.dkr.ecr.us-east-1.amazonaws.com
 
   build:
     commands:
       - echo Building Docker image...
-      - docker build -t $ECR_REPO_NAME .
-      - docker tag $ECR_REPO_NAME:latest 444847049446.dkr.ecr.us-east-1.amazonaws.com/sample-node:latest
+      - docker build -t $ECR_REPO_NAME:latest .
+      - docker tag $ECR_REPO_NAME:latest 288839812643.dkr.ecr.us-east-1.amazonaws.com/node-app:latest
 
   post_build:
     commands:
       - echo Pushing Docker image...
-      - docker push 444847049446.dkr.ecr.us-east-1.amazonaws.com/sample-node:latest
-      - echo Writing image definitions file...
-      - printf '[{"name":"node-ecs-container","imageUri":"%s"}]' \
-        444847049446.dkr.ecr.us-east-1.amazonaws.com/sample-node:latest > imagedefinitions.json
+      - docker push 288839812643.dkr.ecr.us-east-1.amazonaws.com/node-app:latest
+      - echo Writing imagedefinitions.json...
+      - IMAGE_URI=288839812643.dkr.ecr.us-east-1.amazonaws.com/node-app:latest
+      - printf '[{"name":"nodejs-app","imageUri":"%s"}]' "$IMAGE_URI" > imagedefinitions.json
+      - cat imagedefinitions.json
 
 artifacts:
   files:
