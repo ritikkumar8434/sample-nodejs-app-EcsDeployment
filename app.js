@@ -1,26 +1,41 @@
-var http = require('http');
-var url = require('url');
-var fs = require('fs');
+const express = require('express');
+const path = require('path');
+const compression = require('compression');
+const morgan = require('morgan');
 
-http.createServer(function (req, res) {
+const app = express();
+const PORT = process.env.PORT || 8080;
 
-    var q = url.parse(req.url, true);
+// Middleware for performance and logging
+app.use(compression()); // Gzip compression
+app.use(morgan('combined')); // Request logging
 
-    var filename = "." + q.pathname;
-    
-    fs.readFile(filename, function(err, data) {
-        
-      if (err) {
+// Serve static assets efficiently
+app.use(express.static(path.join(__dirname, 'public'), {
+  maxAge: '1d', // cache static files
+  etag: false
+}));
 
-        res.writeHead(404, {'Content-Type': 'text/html'});
-        return res.end("404 Not Found");
+// Health check for ECS / ALB
+app.get('/health', (req, res) => {
+  res.status(200).json({
+    status: 'UP',
+    uptime: process.uptime(),
+    timestamp: new Date()
+  });
+});
 
-      } 
+// Graceful shutdown (important for ECS)
+process.on('SIGTERM', () => {
+  console.log('SIGTERM received. Shutting down gracefully...');
+  process.exit(0);
+});
 
-      res.writeHead(200, {'Content-Type': 'text/html'});
-      res.write(data);
-      return res.end();
+// Fallback route
+app.use((req, res) => {
+  res.status(404).send('404 - Page Not Found');
+});
 
-    });
-
-  }).listen(8080);
+app.listen(PORT, () => {
+  console.log(`🚀 Server running on port ${PORT}`);
+});

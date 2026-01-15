@@ -1,0 +1,31 @@
+version: 0.2
+
+env:
+  variables:
+    ECR_REPO_NAME: sample-node
+    AWS_REGION: us-east-1
+
+phases:
+  pre_build:
+    commands:
+      - echo Logging in to Amazon ECR...
+      - aws ecr get-login-password --region $AWS_REGION |
+        docker login --username AWS --password-stdin 444847049446.dkr.ecr.us-east-1.amazonaws.com
+
+  build:
+    commands:
+      - echo Building Docker image...
+      - docker build -t $ECR_REPO_NAME .
+      - docker tag $ECR_REPO_NAME:latest 444847049446.dkr.ecr.us-east-1.amazonaws.com/sample-node:latest
+
+  post_build:
+    commands:
+      - echo Pushing Docker image...
+      - docker push 444847049446.dkr.ecr.us-east-1.amazonaws.com/sample-node:latest
+      - echo Writing image definitions file...
+      - printf '[{"name":"node-ecs-container","imageUri":"%s"}]' \
+        444847049446.dkr.ecr.us-east-1.amazonaws.com/sample-node:latest > imagedefinitions.json
+
+artifacts:
+  files:
+    - imagedefinitions.json
