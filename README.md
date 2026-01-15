@@ -1,105 +1,149 @@
-# A Sample Node.js Website
+# Sample Node.js Website – ECS Deployment
 
-This is a sample basic Node.js website using plain HTML files and the built in http and fs modules.
+This repository contains a **modernized sample Node.js website** designed to demonstrate **containerized application deployment on AWS ECS** using both **Fargate** and **EC2 launch types**, along with a **CI/CD pipeline using AWS CodePipeline**.
 
-This tutorial will walk you through the creation of a very basic website using only Node.js built in modules. Follow these steps to create a Node.js website:
+The project is lightweight, production-ready, and suitable for local testing as well as cloud deployment.
 
-## Steps
+---
 
-1. Create a folder for your Node.js project.
-2. Create a home page HTML and call it `index.html`. Add the required HTML tags and some basic content in the `index.html` file. 
-3. Create a second file and for now, call it `another-page.html`. Add the required HTML tags and some basic content in the `another-page.html` file.
-4. Add a link in the `index.html` page to `another-page.html`. And add a link in the `another-page.html` to `index.html`. This will allow for easy testing of pages.
-5. Create a new file called `app.js`. 
-6. In `app.js` import the required modules:
+## 🚀 Application Overview
 
-      ```js
-      var http = require('http');
-      var url = require('url');
-      var fs = require('fs');
-      ```
+- Node.js application built with **Express.js**
+- Static website with smooth **CSS animations and transitions**
+- Health check endpoint for load balancers and ECS
+- Dockerized using a **lightweight Alpine-based image**
+- Designed for **AWS ECS + Application Load Balancer**
 
-7. Create an http server:
+---
 
-      ```js
-      http.createServer(function (req, res) {
-      }).listen(8080);
-      ```
+## 🧱 Tech Stack
 
-      This will start a web server. The server is available to test by opening a browser and using the URL `http://localhost:8080/index.html`.
+- **Node.js (Express)**
+- **HTML / CSS (Animations & Transitions)**
+- **Docker**
+- **Amazon ECS (Fargate & EC2)**
+- **Amazon ECR**
+- **AWS CodePipeline & CodeBuild**
+- **Application Load Balancer**
 
-8. Inside the `createServer` function add code to fetch the current URL:
-      
-      ```js
-      var q = url.parse(req.url, true);
-      var filename = "." + q.pathname;
-      ```
-   
-9. Inside the `createServer` function, after the the previous lines of code, add code to load the appropriate HTML file based on the URL. For example the URL `http://localhost:8080/index.html` will load the `index.html` file.
-      
-      ```js
-      fs.readFile(filename, function(err, data) {
-        res.writeHead(200, {'Content-Type': 'text/html'});
-        res.write(data);
-        return res.end();
-      });
-      ```
+---
 
-10. Inside the `readFile` function, add code that will display an error message in case the requested URL does not match an exsting file:
-      
-      ```js 
-      if (err) {
-        res.writeHead(404, {'Content-Type': 'text/html'});
-        return res.end("404 Not Found");
-      } 
-      ```
+## 📁 Project Structure
 
-11. To test your Node.js website, open up a terminal, use `cd` to navigate to your project folder, and use `node app.js` to start your file. Then open a browser and visit the URL `http://localhost:8080/index.html`.
-
-## Final Code
-
-Your final code in `app.js` should look like this:
-
-```js
-var http = require('http');
-var url = require('url');
-var fs = require('fs');
-
-http.createServer(function (req, res) {
-
-  var q = url.parse(req.url, true);
-
-  var filename = "." + q.pathname;
-
-  fs.readFile(filename, function(err, data) {
-
-    if (err) {
-
-      res.writeHead(404, {'Content-Type': 'text/html'});
-      return res.end("404 Not Found");
-
-    } 
-
-    res.writeHead(200, {'Content-Type': 'text/html'});
-    res.write(data);
-    return res.end();
-
-  });
-
-}).listen(8080);
+```text
+.
+├── app.js
+├── package.json
+├── Dockerfile
+├── buildspec.yml
+├── public/
+│   ├── index.html
+│   ├── another-page.html
+│   └── styles.css
+└── README.md
 ```
 
-> Full tutorial URL:  
-> https://codeadam.ca/learning/nodejs-website.html
+---
 
-***
+## ⚙️ Application Features
 
-## Repo Resources
+- **Landing Page** with modern UI and animations
+- **Secondary Page** highlighting project features
+- **Health Check Endpoint**: `/health`
+- **Gzip Compression** for better performance
+- **Request Logging** enabled
+- **Graceful shutdown handling** for ECS
 
-* [Visual Studio Code](https://code.visualstudio.com/)
-* [Node.js](https://nodejs.org/en/)
+---
 
-<br>
-<a href="https://codeadam.ca">
-<img src="https://cdn.codeadam.ca/images@1.0.0/codeadam-logo-coloured-horizontal.png" width="200">
-</a>
+## ▶️ Run Locally
+
+### Prerequisites
+- Node.js 16+
+- npm
+
+### Steps
+```bash
+npm install
+npm start
+```
+
+Access the app:
+- http://localhost:8080
+- http://localhost:8080/another-page.html
+- http://localhost:8080/health
+
+---
+
+## 🐳 Run with Docker (Local Test)
+
+```bash
+docker build -t sample-node .
+docker run -p 8080:8080 sample-node
+```
+
+---
+
+## ☁️ AWS Deployment
+
+### Supported Deployment Options
+
+- **ECS Fargate** (Serverless)
+- **ECS with EC2 instances**
+
+### Container Image
+- Stored in **Amazon ECR**
+- Built and pushed automatically via CI/CD
+
+### Load Balancing
+- Application Load Balancer
+- Health check path: `/health`
+
+---
+
+## 🔄 CI/CD Pipeline (AWS CodePipeline)
+
+The pipeline performs the following steps:
+
+1. Pulls source code from the repository
+2. Builds Docker image using CodeBuild
+3. Pushes image to Amazon ECR
+4. Generates `imagedefinitions.json`
+5. Deploys updated image to ECS service
+
+This enables **automated, zero-downtime deployments**.
+
+---
+
+## 📌 Best Practices Implemented
+
+- Lightweight Docker image using Alpine
+- ECS-compatible port and health checks
+- No hardcoded credentials
+- AWS-native services only
+- Production-ready structure
+
+---
+
+## 🧠 Use Cases
+
+- Learning AWS ECS (Fargate & EC2)
+- Practicing Docker + CI/CD pipelines
+- Demo project for interviews
+- Reference architecture for microservices
+
+---
+
+## 📄 License
+
+This project is for learning and demonstration purposes.
+
+---
+
+## 🙌 Author
+
+**Ritik Sahu**
+
+---
+
+If you have suggestions or want to extend this project (Blue/Green deployments, auto scaling, monitoring), feel free to build on top of it 🚀
